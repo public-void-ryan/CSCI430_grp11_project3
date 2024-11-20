@@ -17,7 +17,7 @@ public class Line extends Item {
   public boolean includes(Point point) {
     return ((distance(point, point1 ) < 10.0) || (distance(point, point2)< 10.0));
   }
-  public void render() {
+  public void render(UIContext uiContext) {
     uiContext.drawLine(point1, point2);
   }
   public void setPoint1(Point point) {

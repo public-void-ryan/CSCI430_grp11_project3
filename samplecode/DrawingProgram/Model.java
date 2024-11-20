@@ -9,16 +9,18 @@ public class Model {
   private Vector itemList;
   private Vector selectedList;
   //  list of "currently selected" items
-  private static UIContext uiContext;
+  //private static UIContext uiContext;
   private static View view;
   public Model() {
     itemList = new Vector();
     selectedList = new Vector();
   }
-  public static void setUI(UIContext uiContext) {
-    Model.uiContext = uiContext;
-    Item.setUIContext(uiContext);
-  }
+  
+  //  public static void setUI(UIContext uiContext) {
+  //  Model.uiContext = uiContext;
+  //  Item.setUIContext(uiContext);
+  // }
+ 
   public static void setView(View view) {
     Model.view = view;
   }
@@ -78,7 +80,7 @@ public class Model {
       ObjectInputStream input = new ObjectInputStream(file);
       itemList = (Vector) input.readObject();
       selectedList = (Vector) input.readObject();
-      Item.setUIContext(uiContext);
+      //Item.setUIContext(uiContext);
       view.refresh();
     } catch(IOException ioe) {
       ioe.printStackTrace();

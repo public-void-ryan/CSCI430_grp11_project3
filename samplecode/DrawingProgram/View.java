@@ -44,12 +44,12 @@ class View extends JFrame {
       g.setColor(Color.BLUE);
       Enumeration enumeration = model.getItems();
       while (enumeration.hasMoreElements()) {
-        ((Item) enumeration.nextElement()).render();
+        ((Item) enumeration.nextElement()).render(uiContext);
       }
       g.setColor(Color.RED);
       enumeration = model.getSelectedItems();
       while (enumeration.hasMoreElements()) {
-        ((Item) enumeration.nextElement()).render();
+        ((Item) enumeration.nextElement()).render(uiContext);
       }
     }
     public void addMouseListener(MouseListener newListener) {
@@ -84,7 +84,7 @@ class View extends JFrame {
         System.exit(0);
       }
     });
-    model.setUI(NewSwingUI.getInstance());
+    this.setUI(NewSwingUI.getInstance());
     drawingPanel = new DrawingPanel();
     buttonPanel = new JPanel();
     Container contentpane = getContentPane();
