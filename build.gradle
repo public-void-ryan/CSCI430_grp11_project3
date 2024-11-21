@@ -14,7 +14,8 @@ dependencies {
 }
 
 application {
-    mainClassName = 'main.DrawingProgram'
+    // Use the new `mainClass` property
+    mainClass = 'main.DrawingProgram'
 }
 
 jar {
