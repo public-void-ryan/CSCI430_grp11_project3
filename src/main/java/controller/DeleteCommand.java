@@ -5,11 +5,11 @@ import model.Item;
 import java.util.*;
 
 public class DeleteCommand extends Command {
-    private Vector itemList;
+    private Vector<Item> itemList;
 
     public DeleteCommand() {
-        itemList = new Vector();
-        Enumeration enumeration = model.getSelectedItems();
+        itemList = new Vector<Item>();
+        Enumeration<Item> enumeration = model.getSelectedItems();
 
         while (enumeration.hasMoreElements()) {
             Item item = (Item) (enumeration.nextElement());
@@ -20,7 +20,7 @@ public class DeleteCommand extends Command {
     }
 
     public boolean undo() {
-        Enumeration enumeration = itemList.elements();
+        Enumeration<Item> enumeration = itemList.elements();
 
         while (enumeration.hasMoreElements()) {
             Item item = (Item) (enumeration.nextElement());

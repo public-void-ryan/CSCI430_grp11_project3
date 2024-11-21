@@ -3,20 +3,19 @@ package model;
 import view.View;
 
 import java.io.*;
-import java.lang.*;
 import java.util.*;
 
 public class Model {
-    private Vector itemList;
-    private Vector selectedList;
+    private Vector<Item> itemList;
+    private Vector<Item> selectedList;
 
-    //  list of "currently selected" items
-    //private static view.UIContext uiContext;
+    // list of "currently selected" items
+    // private static view.UIContext uiContext;
     private static View view;
 
     public Model() {
-        itemList = new Vector();
-        selectedList = new Vector();
+        itemList = new Vector<Item>();
+        selectedList = new Vector<Item>();
     }
 
     public static void setView(View view) {
@@ -56,7 +55,7 @@ public class Model {
         view.refresh();
     }
 
-    public Enumeration getItems() {
+    public Enumeration<Item> getItems() {
         return itemList.elements();
     }
 
@@ -64,7 +63,7 @@ public class Model {
         view.refresh();
     }
 
-    public Enumeration getSelectedItems() {
+    public Enumeration<Item> getSelectedItems() {
         return selectedList.elements();
     }
 
@@ -75,18 +74,19 @@ public class Model {
             ObjectOutputStream output = new ObjectOutputStream(file);
             output.writeObject(itemList);
             output.writeObject(selectedList);
+            output.close();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void retrieve(String fileName) {
-        try {
-            FileInputStream file = new FileInputStream(fileName);
-            ObjectInputStream input = new ObjectInputStream(file);
-            itemList = (Vector) input.readObject();
-            selectedList = (Vector) input.readObject();
-            //model.Item.setUIContext(uiContext);
+        try (FileInputStream file = new FileInputStream(fileName);
+                ObjectInputStream input = new ObjectInputStream(file)) {
+            itemList = (Vector<Item>) input.readObject();
+            selectedList = (Vector<Item>) input.readObject();
+            // model.Item.setUIContext(uiContext);
             view.refresh();
         } catch (IOException ioe) {
             ioe.printStackTrace();

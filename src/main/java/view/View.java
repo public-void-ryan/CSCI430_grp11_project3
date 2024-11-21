@@ -14,7 +14,6 @@ public class View extends JFrame {
     // Panels
     private JPanel drawingPanel;
     private JPanel buttonPanel;
-    private JPanel filePanel;
 
     // Buttons
     private JButton lineButton;
@@ -69,7 +68,7 @@ public class View extends JFrame {
             super.paintComponent(g);
             (NewSwingUI.getInstance()).setGraphics(g);
             g.setColor(Color.BLUE);
-            Enumeration enumeration = model.getItems();
+            Enumeration<Item> enumeration = model.getItems();
             while (enumeration.hasMoreElements()) {
                 ((Item) enumeration.nextElement()).render(uiContext);
             }

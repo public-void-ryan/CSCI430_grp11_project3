@@ -13,7 +13,7 @@ public class SelectCommand extends Command {
 
     public boolean setPoint(Point point) {
         boolean found = false;
-        Enumeration enumeration = model.getItems();
+        Enumeration<Item> enumeration = model.getItems();
         while (enumeration.hasMoreElements()) {
             item = (Item) (enumeration.nextElement());
             if (item.includes(point)) {
