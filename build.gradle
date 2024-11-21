@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JUnit 5 for testing
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+}
+
+application {
+    mainClassName = 'main.DrawingProgram'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'main.DrawingProgram'
+        )
+    }
+}
+
+run {
+    standardInput = System.in
+}
+
+test {
+    useJUnitPlatform()
+
+    // Enable test report generation in both HTML and XML format
+    reports {
+        junitXml.required.set(true)  // XML report
+        html.required.set(true)      // HTML report
+    }
+}
