@@ -1,25 +1,27 @@
 package controller;
 
-import model.Line;
 import model.Model;
+import model.Triangle;
 
 import java.awt.*;
 
-public class LineCommand extends Command {
-    private final Line line;
+public class TriangleCommand extends Command {
+    private final Triangle triangle;
     private int pointCount;
 
-    public LineCommand(Model model, UndoManager manager) {
+    public TriangleCommand(Model model, UndoManager manager) {
         super(model, manager);
-        this.line = new Line();
+        this.triangle = new Triangle();
         this.pointCount = 0;
     }
 
-    public void setLinePoint(Point point, boolean finalPosition) {
+    public void setTrianglePoint(Point point, boolean finalPosition) {
         if (pointCount == 0) {
-            line.setPoint1(point);
+            triangle.setPoint1(point);
         } else if (pointCount == 1) {
-            line.setPoint2(point);
+            triangle.setPoint2(point);
+        } else if (pointCount == 2) {
+            triangle.setPoint3(point);
         }
 
         if (finalPosition) {
@@ -35,12 +37,12 @@ public class LineCommand extends Command {
 
     @Override
     public void execute() {
-        model.addItem(line);
+        model.addItem(triangle);
     }
 
     @Override
     public boolean undo() {
-        model.removeItem(line);
+        model.removeItem(triangle);
         return true;
     }
 
@@ -52,11 +54,10 @@ public class LineCommand extends Command {
 
     @Override
     public boolean end() {
-        if (line.getPoint1() == null || line.getPoint2() == null) {
+        if (triangle.getPoint1() == null || triangle.getPoint2() == null || triangle.getPoint3() == null) {
             undo();
             return false;
         }
-
         return true;
     }
 }

@@ -41,6 +41,7 @@ public class View extends JFrame implements ModelObserver {
 
     private void initializeComponents() {
         JButton lineButton = new LineButton(model, undoManager, this, drawingPanel);
+        JButton triangleButton = new TriangleButton(model, undoManager, this, drawingPanel);
         JButton labelButton = new LabelButton(model, undoManager, this, drawingPanel);
         JButton selectButton = new SelectButton(model, undoManager, this, drawingPanel);
         JButton saveButton = new SaveButton(model, undoManager, this);
@@ -50,6 +51,7 @@ public class View extends JFrame implements ModelObserver {
         JButton redoButton = new RedoButton(undoManager);
 
         buttonPanel.add(lineButton);
+        buttonPanel.add(triangleButton);
         buttonPanel.add(labelButton);
         buttonPanel.add(selectButton);
         buttonPanel.add(deleteButton);

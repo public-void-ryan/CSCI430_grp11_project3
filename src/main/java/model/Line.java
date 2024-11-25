@@ -76,8 +76,4 @@ public class Line extends Item {
     public Point getPoint2() {
         return point2;
     }
-
-    public String toString() {
-        return "model.Line  from " + point1 + " to " + point2;
-    }
 }

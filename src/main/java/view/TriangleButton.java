@@ -1,6 +1,6 @@
 package view;
 
-import controller.LineCommand;
+import controller.TriangleCommand;
 import controller.UndoManager;
 import model.Model;
 
@@ -8,16 +8,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LineButton extends JButton implements ActionListener {
-    protected final JPanel drawingPanel;
-    protected final View view;
+public class TriangleButton extends JButton implements ActionListener {
+    private final JPanel drawingPanel;
+    private final View view;
     private final UndoManager undoManager;
     private final Model model;
     private final MouseHandler mouseHandler;
-    private LineCommand lineCommand;
+    private TriangleCommand triangleCommand;
 
-    public LineButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
-        super("Line");
+    public TriangleButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
+        super("Triangle");
         this.model = model;
         this.undoManager = undoManager;
         this.view = view;
@@ -38,7 +38,7 @@ public class LineButton extends JButton implements ActionListener {
     }
 
     private void resetState() {
-        lineCommand = null;
+        triangleCommand = null;
         undoManager.endCommand();
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         drawingPanel.removeMouseListener(mouseHandler);
@@ -48,20 +48,22 @@ public class LineButton extends JButton implements ActionListener {
     private class MouseHandler extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent event) {
-            if (lineCommand == null || lineCommand.getPointCount() == 0) {
-                lineCommand = new LineCommand(model, undoManager);
-                lineCommand.setLinePoint(event.getPoint(), true);
-                undoManager.beginCommand(lineCommand);
-            } else if (lineCommand.getPointCount() == 1) {
-                lineCommand.setLinePoint(event.getPoint(), true);
+            if (triangleCommand == null || triangleCommand.getPointCount() == 0) {
+                triangleCommand = new TriangleCommand(model, undoManager);
+                triangleCommand.setTrianglePoint(event.getPoint(), true);
+                undoManager.beginCommand(triangleCommand);
+            } else if (triangleCommand.getPointCount() == 1) {
+                triangleCommand.setTrianglePoint(event.getPoint(), true);
+            } else if (triangleCommand.getPointCount() == 2) {
+                triangleCommand.setTrianglePoint(event.getPoint(), true);
                 resetState();
             }
         }
 
         @Override
         public void mouseMoved(MouseEvent event) {
-            if (lineCommand != null) {
-                lineCommand.setLinePoint(event.getPoint(), false);
+            if (triangleCommand != null) {
+                triangleCommand.setTrianglePoint(event.getPoint(), false);
             }
         }
 
