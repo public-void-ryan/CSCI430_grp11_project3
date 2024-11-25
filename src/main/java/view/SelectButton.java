@@ -1,37 +1,47 @@
 package view;
 
-import controller.*;
+import controller.SelectCommand;
+import controller.UndoManager;
+import model.Model;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.awt.*;
 
 public class SelectButton extends JButton implements ActionListener {
-    protected JPanel drawingPanel;
-    protected View view;
-    private MouseHandler mouseHandler;
+    protected final JPanel drawingPanel;
+    protected final View view;
+    private final UndoManager undoManager;
+    private final Model model;
     private SelectCommand selectCommand;
-    private UndoManager undoManager;
+    private final MouseHandler mouseHandler;
 
-    public SelectButton(UndoManager undoManager, View jFrame, JPanel jPanel) {
+    public SelectButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
         super("Select");
-        addActionListener(this);
-        view = jFrame;
-        drawingPanel = jPanel;
+        this.model = model;
         this.undoManager = undoManager;
+        this.view = view;
+        this.drawingPanel = drawingPanel;
+
         mouseHandler = new MouseHandler();
+
+        addActionListener(this);
+        setFocusable(false);
     }
 
+    @Override
     public void actionPerformed(ActionEvent event) {
-        selectCommand = new SelectCommand();
+        selectCommand = new SelectCommand(model, undoManager);
         drawingPanel.addMouseListener(mouseHandler);
         undoManager.beginCommand(selectCommand);
     }
 
     private class MouseHandler extends MouseAdapter {
+        @Override
         public void mouseClicked(MouseEvent event) {
-            if (selectCommand.setPoint(View.mapPoint(event.getPoint()))) {
+            if (selectCommand.setPoint(event.getPoint())) {
                 drawingPanel.removeMouseListener(this);
-                undoManager.endCommand(selectCommand);
+                undoManager.endCommand();
             } else {
                 undoManager.cancelCommand();
             }

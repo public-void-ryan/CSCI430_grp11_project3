@@ -1,62 +1,45 @@
 package controller;
 
-import model.Model;
-
-import java.util.*;
+import java.util.Stack;
 
 public class UndoManager {
-    private static Model model;
-    private Stack<Command> history;
-    private Stack<Command> redoStack;
+    private final Stack<Command> history = new Stack<>();
+    private final Stack<Command> redoStack = new Stack<>();
     private Command currentCommand;
 
-    public UndoManager() {
-        history = new Stack<>();
-        redoStack = new Stack<>();
-    }
-
-    public static void setModel(Model model) {
-        UndoManager.model = model;
-    }
-
     public void beginCommand(Command command) {
-        if (currentCommand != null) {
-            if (currentCommand.end()) {
-                history.push(currentCommand);
-            }
+        if (currentCommand != null && currentCommand.end()) {
+            history.push(currentCommand);
         }
         currentCommand = command;
         redoStack.clear();
         command.execute();
     }
 
-    public void endCommand(Command command) {
-        command.end();
-        history.push(command);
+    public void endCommand() {
+        if (currentCommand != null && currentCommand.end()) {
+            history.push(currentCommand);
+        }
         currentCommand = null;
-        model.setChanged();
     }
 
     public void cancelCommand() {
         currentCommand = null;
-        model.setChanged();
     }
 
     public void undo() {
-        if (!(history.empty())) {
-            Command command = (Command) (history.peek());
+        if (!history.isEmpty()) {
+            Command command = history.pop();
             if (command.undo()) {
-                history.pop();
                 redoStack.push(command);
             }
         }
     }
 
     public void redo() {
-        if (!(redoStack.empty())) {
-            Command command = (Command) (redoStack.peek());
+        if (!redoStack.isEmpty()) {
+            Command command = redoStack.pop();
             if (command.redo()) {
-                redoStack.pop();
                 history.push(command);
             }
         }

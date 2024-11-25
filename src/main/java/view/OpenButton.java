@@ -1,26 +1,36 @@
 package view;
 
-import controller.*;
+import controller.OpenCommand;
+import controller.UndoManager;
+import model.Model;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class OpenButton extends JButton implements ActionListener {
-    protected View view;
-    private UndoManager undoManager;
+    protected final View view;
+    private final UndoManager undoManager;
+    private final Model model;
 
-    public OpenButton(UndoManager undoManager, View jFrame) {
+    public OpenButton(Model model, UndoManager undoManager, View view) {
         super("Open");
+        this.model = model;
         this.undoManager = undoManager;
+        this.view = view;
+
         addActionListener(this);
-        view = jFrame;
+        setFocusable(false);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
-        String string = JOptionPane.showInputDialog(view, "Please type new file name");
-        OpenCommand command = new OpenCommand(string);
-        view.setFileName(string);
-        undoManager.beginCommand(command);
-        undoManager.endCommand(command);
+        String fileName = JOptionPane.showInputDialog(view, "Please type the file name to open:");
+        if (fileName != null && !fileName.trim().isEmpty()) {
+            OpenCommand command = new OpenCommand(model, undoManager, fileName);
+            undoManager.beginCommand(command);
+            undoManager.endCommand();
+            view.setFileName(fileName);
+        }
     }
 }

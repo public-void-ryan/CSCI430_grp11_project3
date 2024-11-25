@@ -25,7 +25,35 @@ public class Line extends Item {
 
     @Override
     public boolean includes(Point point) {
-        return ((distance(point, point1) < 10.0) || (distance(point, point2) < 10.0));
+        if (point1 == null || point2 == null) {
+            return false;
+        }
+
+        double distance = distanceToLineSegment(point, point1, point2);
+        return distance < 10.0;
+    }
+
+    private double distanceToLineSegment(Point clickedPoint, Point linePoint1, Point linePoint2) {
+        double linePoint1X = linePoint1.getX();
+        double linePoint1Y = linePoint1.getY();
+        double linePoint2X = linePoint2.getX();
+        double linePoint2Y = linePoint2.getY();
+        double clickedPointX = clickedPoint.getX();
+        double clickedPointY = clickedPoint.getY();
+
+        double lineLengthSquared = Math.pow(linePoint2X - linePoint1X, 2) + Math.pow(linePoint2Y - linePoint1Y, 2);
+
+        if (lineLengthSquared == 0) {
+            return clickedPoint.distance(linePoint1);
+        }
+
+        double t = ((clickedPointX - linePoint1X) * (linePoint2X - linePoint1X) + (clickedPointY - linePoint1Y) * (linePoint2Y - linePoint1Y)) / lineLengthSquared;
+        t = Math.max(0, Math.min(1, t));
+
+        double closestX = linePoint1X + t * (linePoint2X - linePoint1X);
+        double closestY = linePoint1Y + t * (linePoint2Y - linePoint1Y);
+
+        return clickedPoint.distance(closestX, closestY);
     }
 
     @Override

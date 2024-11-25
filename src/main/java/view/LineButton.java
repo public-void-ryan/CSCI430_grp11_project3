@@ -1,48 +1,69 @@
 package view;
 
-import controller.*;
+import controller.LineCommand;
+import controller.UndoManager;
+import model.Model;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class LineButton extends JButton implements ActionListener {
-    protected JPanel drawingPanel;
-    protected View view;
-    private MouseHandler mouseHandler;
-    private LineCommand lineCommand;
-    private UndoManager undoManager;
+    protected final JPanel drawingPanel;
+    protected final View view;
+    private final UndoManager undoManager;
+    private final Model model;
+    private final MouseHandler mouseHandler;
 
-    public LineButton(UndoManager undoManager, View jFrame, JPanel jPanel) {
+    public LineButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
         super("Line");
+        this.model = model;
         this.undoManager = undoManager;
-        addActionListener(this);
-        view = jFrame;
-        drawingPanel = jPanel;
+        this.view = view;
+        this.drawingPanel = drawingPanel;
+
         mouseHandler = new MouseHandler();
+
+        addFocusListener(new FocusHandler());
+        addActionListener(this);
+        setFocusable(false);
     }
 
+    @Override
     public void actionPerformed(ActionEvent event) {
         view.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-        // Change cursor when button is clicked
         drawingPanel.addMouseListener(mouseHandler);
-        // Start listening for mouseclicks on the drawing panel
+    }
+
+    private void resetState() {
+        view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        drawingPanel.removeMouseListener(mouseHandler);
     }
 
     private class MouseHandler extends MouseAdapter {
         private int pointCount = 0;
+        private LineCommand lineCommand;
 
+        @Override
         public void mouseClicked(MouseEvent event) {
             if (++pointCount == 1) {
-                lineCommand = new LineCommand(View.mapPoint(event.getPoint()));
+                lineCommand = new LineCommand(model, undoManager);
+                lineCommand.setLinePoint(event.getPoint());
                 undoManager.beginCommand(lineCommand);
             } else if (pointCount == 2) {
+                lineCommand.setLinePoint(event.getPoint());
                 pointCount = 0;
-                lineCommand.setLinePoint(View.mapPoint(event.getPoint()));
-                drawingPanel.removeMouseListener(this);
-                view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                undoManager.endCommand(lineCommand);
+                undoManager.endCommand();
+                resetState();
             }
+        }
+    }
+
+    private class FocusHandler extends FocusAdapter {
+        @Override
+        public void focusLost(FocusEvent e) {
+            undoManager.endCommand();
+            resetState();
         }
     }
 }

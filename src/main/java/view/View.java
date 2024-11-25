@@ -8,47 +8,69 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-public class View extends JFrame {
-    private UIContext uiContext;
+public class View extends JFrame implements ModelObserver {
+    private final UIContext uiContext;
+    private final Model model;
+    private final UndoManager undoManager;
 
-    // Panels
-    private JPanel drawingPanel;
-    private JPanel buttonPanel;
-
-    // Buttons
-    private JButton lineButton;
-    private JButton deleteButton;
-    private JButton labelButton;
-    private JButton selectButton;
-    private JButton saveButton;
-    private JButton openButton;
-    private JButton undoButton;
-    private JButton redoButton;
+    private final JPanel drawingPanel;
+    private final JPanel buttonPanel;
 
     private String fileName;
 
-    private static UndoManager undoManager;
-    private static Model model;
+    public View(Model model, UndoManager undoManager) {
+        super("Drawing Program 1.1 - Untitled");
+        this.model = model;
+        this.undoManager = undoManager;
+        this.uiContext = new NewSwingUI();
 
-    public UIContext getUI() {
-        return uiContext;
+        this.model.addObserver(this);
+
+        drawingPanel = new DrawingPanel();
+        buttonPanel = new JPanel();
+
+        initializeComponents();
+
+        Container contentPane = getContentPane();
+        contentPane.add(buttonPanel, BorderLayout.NORTH);
+        contentPane.add(drawingPanel, BorderLayout.CENTER);
+
+        this.setSize(800, 400);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private void setUI(UIContext uiContext) {
-        this.uiContext = uiContext;
+    private void initializeComponents() {
+        JButton lineButton = new LineButton(model, undoManager, this, drawingPanel);
+        JButton labelButton = new LabelButton(model, undoManager, this, drawingPanel);
+        JButton selectButton = new SelectButton(model, undoManager, this, drawingPanel);
+        JButton saveButton = new SaveButton(model, undoManager, this);
+        JButton openButton = new OpenButton(model, undoManager, this);
+        JButton deleteButton = new DeleteButton(model, undoManager);
+        JButton undoButton = new UndoButton(undoManager);
+        JButton redoButton = new RedoButton(undoManager);
+
+        buttonPanel.add(lineButton);
+        buttonPanel.add(labelButton);
+        buttonPanel.add(selectButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(saveButton);
+        buttonPanel.add(openButton);
+        buttonPanel.add(undoButton);
+        buttonPanel.add(redoButton);
     }
 
-    public static void setModel(Model model) {
-        View.model = model;
+    @Override
+    public void modelChanged() {
+        refresh();
     }
 
-    public static void setUndoManager(UndoManager undoManager) {
-        View.undoManager = undoManager;
+    public void refresh() {
+        drawingPanel.repaint();
     }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-        setTitle("Drawing Program 1.1  " + fileName);
+        setTitle("Drawing Program 1.1 - " + fileName);
     }
 
     public String getFileName() {
@@ -64,82 +86,46 @@ public class View extends JFrame {
             setLayout(null);
         }
 
-        public void paintComponent(Graphics g) {
+        @Override
+        protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            (NewSwingUI.getInstance()).setGraphics(g);
+            ((NewSwingUI) uiContext).setGraphics(g);
+
             g.setColor(Color.BLUE);
-            Enumeration<Item> enumeration = model.getItems();
-            while (enumeration.hasMoreElements()) {
-                ((Item) enumeration.nextElement()).render(uiContext);
+            Enumeration<Item> items = model.getItems();
+            while (items.hasMoreElements()) {
+                items.nextElement().render(uiContext);
             }
+
             g.setColor(Color.RED);
-            enumeration = model.getSelectedItems();
-            while (enumeration.hasMoreElements()) {
-                ((Item) enumeration.nextElement()).render(uiContext);
+            Enumeration<Item> selectedItems = model.getSelectedItems();
+            while (selectedItems.hasMoreElements()) {
+                selectedItems.nextElement().render(uiContext);
             }
         }
 
         public void addMouseListener(MouseListener newListener) {
-            removeMouseListener(currentMouseListener);
+            if (currentMouseListener != null) {
+                removeMouseListener(currentMouseListener);
+            }
             currentMouseListener = newListener;
             super.addMouseListener(newListener);
         }
 
         public void addKeyListener(KeyListener newListener) {
-            removeKeyListener(currentKeyListener);
+            if (currentKeyListener != null) {
+                removeKeyListener(currentKeyListener);
+            }
             currentKeyListener = newListener;
             super.addKeyListener(newListener);
         }
 
         public void addFocusListener(FocusListener newListener) {
-            removeFocusListener(currentFocusListener);
+            if (currentFocusListener != null) {
+                removeFocusListener(currentFocusListener);
+            }
             currentFocusListener = newListener;
             super.addFocusListener(newListener);
         }
-    }
-
-    public View() {
-        super("Drawing Program 1.1  Untitled");
-        fileName = null;
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent event) {
-                System.exit(0);
-            }
-        });
-        this.setUI(NewSwingUI.getInstance());
-        drawingPanel = new DrawingPanel();
-        buttonPanel = new JPanel();
-        Container contentpane = getContentPane();
-        contentpane.add(buttonPanel, "North");
-        contentpane.add(drawingPanel);
-        lineButton = new LineButton(undoManager, this, drawingPanel);
-        labelButton = new LabelButton(undoManager, this, drawingPanel);
-        selectButton = new SelectButton(undoManager, this, drawingPanel);
-        deleteButton = new DeleteButton(undoManager);
-        saveButton = new SaveButton(undoManager, this);
-        openButton = new OpenButton(undoManager, this);
-        undoButton = new UndoButton(undoManager);
-        redoButton = new RedoButton(undoManager);
-        buttonPanel.add(lineButton);
-        buttonPanel.add(labelButton);
-        buttonPanel.add(selectButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(saveButton);
-        buttonPanel.add(openButton);
-        buttonPanel.add(undoButton);
-        buttonPanel.add(redoButton);
-        this.setSize(800, 400);
-    }
-
-    public void refresh() {
-        // code to access the model.Model update the contents of the drawing panel.
-        drawingPanel.repaint();
-    }
-
-    public static Point mapPoint(Point point) {
-        // maps a point on the drawing panel to a point
-        // on the figure being created. Perhaps this
-        // should be in drawing panel
-        return point;
     }
 }

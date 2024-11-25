@@ -3,15 +3,12 @@ package controller;
 import model.Model;
 
 public abstract class Command {
-    protected static UndoManager manager;
-    protected static Model model;
+    protected UndoManager manager;
+    protected Model model;
 
-    public static void setModel(Model model) {
-        Command.model = model;
-    }
-
-    public static void setUndoManager(UndoManager undoManager) {
-        Command.manager = undoManager;
+    public Command(Model model, UndoManager manager) {
+        this.model = model;
+        this.manager = manager;
     }
 
     public abstract boolean undo();

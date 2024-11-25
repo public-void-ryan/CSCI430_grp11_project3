@@ -1,26 +1,18 @@
 package controller;
 
 import model.Line;
+import model.Model;
 
 import java.awt.*;
 
 public class LineCommand extends Command {
-    private Line line;
+    private final Line line;
     private int pointCount;
 
-    public LineCommand() {
-        this(null, null);
-        pointCount = 0;
-    }
-
-    public LineCommand(Point point) {
-        this(point, null);
-        pointCount = 1;
-    }
-
-    public LineCommand(Point point1, Point point2) {
-        line = new Line(point1, point2);
-        pointCount = 2;
+    public LineCommand(Model model, UndoManager manager) {
+        super(model, manager);
+        this.line = new Line();
+        this.pointCount = 0;
     }
 
     public void setLinePoint(Point point) {
@@ -29,6 +21,7 @@ public class LineCommand extends Command {
         } else if (pointCount == 2) {
             line.setPoint2(point);
         }
+        model.notifyObservers();
     }
 
     @Override

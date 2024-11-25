@@ -1,9 +1,12 @@
 package controller;
 
-public class SaveCommand extends Command {
-    private String fileName;
+import model.Model;
 
-    public SaveCommand(String fileName) {
+public class SaveCommand extends Command {
+    private final String fileName;
+
+    public SaveCommand(Model model, UndoManager manager, String fileName) {
+        super(model, manager);
         this.fileName = fileName;
     }
 

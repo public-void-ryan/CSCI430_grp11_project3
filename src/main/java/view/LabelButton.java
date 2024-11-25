@@ -1,78 +1,83 @@
 package view;
 
-import controller.*;
+import controller.LabelCommand;
+import controller.UndoManager;
+import model.Model;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class LabelButton extends JButton implements ActionListener {
-    protected JPanel drawingPanel;
-    protected View view;
-    private KeyHandler keyHandler;
-    private MouseHandler mouseHandler;
+    protected final JPanel drawingPanel;
+    protected final View view;
+    private final UndoManager undoManager;
+    private final Model model;
+    private final MouseHandler mouseHandler;
+    private final KeyHandler keyHandler;
     private LabelCommand labelCommand;
-    private UndoManager undoManager;
 
-    public LabelButton(UndoManager undoManager, View jFrame, JPanel jPanel) {
+    public LabelButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
         super("Label");
+        this.model = model;
         this.undoManager = undoManager;
+        this.view = view;
+        this.drawingPanel = drawingPanel;
+
+        mouseHandler = new MouseHandler();
         keyHandler = new KeyHandler();
+
         addActionListener(this);
-        view = jFrame;
-        drawingPanel = jPanel;
-        keyHandler = new KeyHandler();
+        setFocusable(false);
     }
 
+    @Override
     public void actionPerformed(ActionEvent event) {
-        drawingPanel.addMouseListener(mouseHandler = new MouseHandler());
+        view.setCursor(new Cursor(Cursor.TEXT_CURSOR));
+        drawingPanel.addMouseListener(mouseHandler);
+        drawingPanel.requestFocusInWindow();
+    }
+
+    private void resetState() {
+        view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        drawingPanel.removeMouseListener(mouseHandler);
+        drawingPanel.removeKeyListener(keyHandler);
     }
 
     private class MouseHandler extends MouseAdapter {
+        @Override
         public void mouseClicked(MouseEvent event) {
-            view.setCursor(new Cursor(Cursor.TEXT_CURSOR));
             if (labelCommand != null) {
-                undoManager.endCommand(labelCommand);
+                undoManager.endCommand();
             }
-            labelCommand = new LabelCommand(View.mapPoint(event.getPoint()));
+
+            labelCommand = new LabelCommand(model, undoManager, event.getPoint());
             undoManager.beginCommand(labelCommand);
-            drawingPanel.addFocusListener(keyHandler);
-            drawingPanel.requestFocusInWindow();
+
             drawingPanel.addKeyListener(keyHandler);
+            drawingPanel.requestFocusInWindow();
         }
     }
 
-    private class KeyHandler extends KeyAdapter implements FocusListener {
+    private class KeyHandler extends KeyAdapter {
+        @Override
         public void keyTyped(KeyEvent event) {
             char character = event.getKeyChar();
-            if (character >= 32 && character <= 126) {
-                labelCommand.addCharacter(event.getKeyChar());
+            if (character >= 32 && character <= 126 && labelCommand != null) {
+                labelCommand.addCharacter(character);
             }
         }
 
+        @Override
         public void keyPressed(KeyEvent event) {
-            if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-                view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                drawingPanel.removeMouseListener(mouseHandler);
-                drawingPanel.removeKeyListener(keyHandler);
-                undoManager.endCommand(labelCommand);
-                view.refresh();
-            } else if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-                labelCommand.removeCharacter();
+            if (labelCommand != null) {
+                if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+                    undoManager.endCommand();
+                    resetState();
+                } else if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    labelCommand.removeCharacter();
+                }
             }
-        }
-
-        public void focusGained(FocusEvent event) {
-            drawingPanel.addKeyListener(this);
-        }
-
-        public void focusLost(FocusEvent event) {
-            view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            drawingPanel.removeMouseListener(mouseHandler);
-            undoManager.endCommand(labelCommand);
-            drawingPanel.removeKeyListener(keyHandler);
-            undoManager.endCommand(labelCommand);
-            view.refresh();
         }
     }
 }

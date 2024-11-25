@@ -5,7 +5,7 @@ import view.UIContext;
 import java.awt.*;
 
 public class Label extends Item {
-    private Point startingPoint;
+    private final Point startingPoint;
     private String text = "";
 
     public Label(Point point) {

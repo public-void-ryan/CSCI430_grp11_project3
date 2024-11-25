@@ -1,24 +1,26 @@
 package controller;
 
 import model.Label;
+import model.Model;
 
 import java.awt.*;
 
 public class LabelCommand extends Command {
-    private model.Label label;
+    private final Label label;
 
-    public LabelCommand(Point point) {
-        label = new Label(point);
+    public LabelCommand(Model model, UndoManager manager, Point point) {
+        super(model, manager);
+        this.label = new Label(point);
     }
 
     public void addCharacter(char character) {
         label.addCharacter(character);
-        model.setChanged();
+        model.notifyObservers();
     }
 
     public void removeCharacter() {
         label.removeCharacter();
-        model.setChanged();
+        model.notifyObservers();
     }
 
     @Override

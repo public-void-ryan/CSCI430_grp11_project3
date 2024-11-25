@@ -1,9 +1,12 @@
 package controller;
 
-public class OpenCommand extends Command {
-    private String fileName;
+import model.Model;
 
-    public OpenCommand(String fileName) {
+public class OpenCommand extends Command {
+    private final String fileName;
+
+    public OpenCommand(Model model, UndoManager manager, String fileName) {
+        super(model, manager);
         this.fileName = fileName;
     }
 

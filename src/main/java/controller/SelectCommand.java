@@ -1,21 +1,24 @@
 package controller;
 
 import model.Item;
+import model.Model;
 
 import java.awt.*;
-import java.util.*;
+import java.util.Enumeration;
 
 public class SelectCommand extends Command {
     private Item item;
 
-    public SelectCommand() {
+    public SelectCommand(Model model, UndoManager manager) {
+        super(model, manager);
     }
 
     public boolean setPoint(Point point) {
         boolean found = false;
-        Enumeration<Item> enumeration = model.getItems();
-        while (enumeration.hasMoreElements()) {
-            item = (Item) (enumeration.nextElement());
+        Enumeration<Item> items = model.getItems();
+
+        while (items.hasMoreElements()) {
+            item = items.nextElement();
             if (item.includes(point)) {
                 model.markSelected(item);
                 found = true;
@@ -27,7 +30,7 @@ public class SelectCommand extends Command {
 
     @Override
     public boolean undo() {
-        model.unSelect(item);
+        model.markUnselected(item);
         return true;
     }
 
@@ -39,6 +42,8 @@ public class SelectCommand extends Command {
 
     @Override
     public void execute() {
-        model.markSelected(item);
+        if (item != null) {
+            model.markSelected(item);
+        }
     }
 }
