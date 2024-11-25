@@ -16,9 +16,10 @@ public class LineCommand extends Command {
     }
 
     public void setLinePoint(Point point) {
-        if (++pointCount == 1) {
+        if (pointCount == 0) {
             line.setPoint1(point);
-        } else if (pointCount == 2) {
+            pointCount++;
+        } else {
             line.setPoint2(point);
         }
         model.notifyObservers();

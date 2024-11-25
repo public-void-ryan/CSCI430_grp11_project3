@@ -33,6 +33,7 @@ public class LineButton extends JButton implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         view.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         drawingPanel.addMouseListener(mouseHandler);
+        drawingPanel.addMouseMotionListener(mouseHandler);
         drawingPanel.requestFocusInWindow();
     }
 
@@ -53,6 +54,13 @@ public class LineButton extends JButton implements ActionListener {
             } else {
                 lineCommand.setLinePoint(event.getPoint());
                 resetState();
+            }
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent event) {
+            if (lineCommand != null) {
+                lineCommand.setLinePoint(event.getPoint());
             }
         }
 
