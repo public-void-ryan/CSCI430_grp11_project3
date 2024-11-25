@@ -6,7 +6,6 @@ import model.Model;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.*;
 
 public class SelectButton extends JButton implements ActionListener {
     protected final JPanel drawingPanel;
