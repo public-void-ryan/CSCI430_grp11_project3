@@ -14,6 +14,7 @@ public class LineButton extends JButton implements ActionListener {
     private final UndoManager undoManager;
     private final Model model;
     private final MouseHandler mouseHandler;
+    private LineCommand lineCommand;
 
     public LineButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
         super("Line");
@@ -24,7 +25,6 @@ public class LineButton extends JButton implements ActionListener {
 
         mouseHandler = new MouseHandler();
 
-        addFocusListener(new FocusHandler());
         addActionListener(this);
         setFocusable(false);
     }
@@ -33,36 +33,31 @@ public class LineButton extends JButton implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         view.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         drawingPanel.addMouseListener(mouseHandler);
+        drawingPanel.requestFocusInWindow();
     }
 
     private void resetState() {
+        lineCommand = null;
+        undoManager.endCommand();
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         drawingPanel.removeMouseListener(mouseHandler);
     }
 
     private class MouseHandler extends MouseAdapter {
-        private int pointCount = 0;
-        private LineCommand lineCommand;
-
         @Override
         public void mouseClicked(MouseEvent event) {
-            if (++pointCount == 1) {
+            if (lineCommand == null) {
                 lineCommand = new LineCommand(model, undoManager);
                 lineCommand.setLinePoint(event.getPoint());
                 undoManager.beginCommand(lineCommand);
-            } else if (pointCount == 2) {
+            } else {
                 lineCommand.setLinePoint(event.getPoint());
-                pointCount = 0;
-                undoManager.endCommand();
                 resetState();
             }
         }
-    }
 
-    private class FocusHandler extends FocusAdapter {
         @Override
-        public void focusLost(FocusEvent e) {
-            undoManager.endCommand();
+        public void mouseExited(MouseEvent event) {
             resetState();
         }
     }

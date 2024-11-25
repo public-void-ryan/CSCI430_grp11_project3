@@ -35,10 +35,13 @@ public class LabelButton extends JButton implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         view.setCursor(new Cursor(Cursor.TEXT_CURSOR));
         drawingPanel.addMouseListener(mouseHandler);
+        drawingPanel.addKeyListener(keyHandler);
         drawingPanel.requestFocusInWindow();
     }
 
     private void resetState() {
+        labelCommand = null;
+        undoManager.endCommand();
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         drawingPanel.removeMouseListener(mouseHandler);
         drawingPanel.removeKeyListener(keyHandler);
@@ -53,9 +56,11 @@ public class LabelButton extends JButton implements ActionListener {
 
             labelCommand = new LabelCommand(model, undoManager, event.getPoint());
             undoManager.beginCommand(labelCommand);
+        }
 
-            drawingPanel.addKeyListener(keyHandler);
-            drawingPanel.requestFocusInWindow();
+        @Override
+        public void mouseExited(MouseEvent event) {
+            resetState();
         }
     }
 
@@ -72,7 +77,6 @@ public class LabelButton extends JButton implements ActionListener {
         public void keyPressed(KeyEvent event) {
             if (labelCommand != null) {
                 if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-                    undoManager.endCommand();
                     resetState();
                 } else if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
                     labelCommand.removeCharacter();

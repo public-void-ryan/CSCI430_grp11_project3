@@ -39,4 +39,14 @@ public class LabelCommand extends Command {
         execute();
         return true;
     }
+
+    @Override
+    public boolean end() {
+        if (label.getText().isEmpty()) {
+            undo();
+            return false;
+        }
+
+        return true;
+    }
 }
