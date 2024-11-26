@@ -69,6 +69,13 @@ public class Model {
         notifyObservers();
     }
 
+    public void moveSelectedItems(int dx, int dy) {
+        for (Item item : selectedList) {
+            item.translate(dx, dy);
+        }
+        notifyObservers();
+    }
+
     public void save(String fileName) {
         try (FileOutputStream file = new FileOutputStream(fileName);
              ObjectOutputStream output = new ObjectOutputStream(file)) {

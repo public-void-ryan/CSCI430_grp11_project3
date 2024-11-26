@@ -45,6 +45,7 @@ public class View extends JFrame implements ModelObserver {
         JButton polygonButton = new PolygonButton(model, undoManager, this, drawingPanel);
         JButton labelButton = new LabelButton(model, undoManager, this, drawingPanel);
         JButton selectButton = new SelectButton(model, undoManager, this, drawingPanel);
+        JButton moveButton = new MoveButton(model, undoManager, this, drawingPanel);
         JButton saveButton = new SaveButton(model, undoManager, this);
         JButton openButton = new OpenButton(model, undoManager, this);
         JButton deleteButton = new DeleteButton(model, undoManager);
@@ -56,6 +57,7 @@ public class View extends JFrame implements ModelObserver {
         buttonPanel.add(polygonButton);
         buttonPanel.add(labelButton);
         buttonPanel.add(selectButton);
+        buttonPanel.add(moveButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(saveButton);
         buttonPanel.add(openButton);

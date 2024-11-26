@@ -32,6 +32,11 @@ public class Label extends Item {
         uiContext.drawLabel(text, startingPoint);
     }
 
+    @Override
+    public void translate(int dx, int dy) {
+        startingPoint.translate(dx, dy);
+    }
+
     public String getText() {
         return text;
     }
