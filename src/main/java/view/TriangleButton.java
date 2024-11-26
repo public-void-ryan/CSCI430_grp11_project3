@@ -1,6 +1,6 @@
 package view;
 
-import controller.TriangleCommand;
+import controller.PolylineCommand;
 import controller.UndoManager;
 import model.Model;
 
@@ -14,7 +14,7 @@ public class TriangleButton extends JButton implements ActionListener {
     private final UndoManager undoManager;
     private final Model model;
     private final MouseHandler mouseHandler;
-    private TriangleCommand triangleCommand;
+    private PolylineCommand polylineCommand;
 
     public TriangleButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
         super("Triangle");
@@ -38,7 +38,7 @@ public class TriangleButton extends JButton implements ActionListener {
     }
 
     private void resetState() {
-        triangleCommand = null;
+        polylineCommand = null;
         undoManager.endCommand();
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         drawingPanel.removeMouseListener(mouseHandler);
@@ -48,22 +48,22 @@ public class TriangleButton extends JButton implements ActionListener {
     private class MouseHandler extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent event) {
-            if (triangleCommand == null || triangleCommand.getPointCount() == 0) {
-                triangleCommand = new TriangleCommand(model, undoManager);
-                triangleCommand.setTrianglePoint(event.getPoint(), true);
-                undoManager.beginCommand(triangleCommand);
-            } else if (triangleCommand.getPointCount() == 1) {
-                triangleCommand.setTrianglePoint(event.getPoint(), true);
-            } else if (triangleCommand.getPointCount() == 2) {
-                triangleCommand.setTrianglePoint(event.getPoint(), true);
+            if (polylineCommand == null || polylineCommand.getPointCount() == 0) {
+                polylineCommand = new PolylineCommand(model, undoManager);
+                polylineCommand.setPolylinePoint(event.getPoint(), true);
+                undoManager.beginCommand(polylineCommand);
+            } else if (polylineCommand.getPointCount() == 1) {
+                polylineCommand.setPolylinePoint(event.getPoint(), true);
+            } else if (polylineCommand.getPointCount() == 2) {
+                polylineCommand.setPolylinePoint(event.getPoint(), true);
                 resetState();
             }
         }
 
         @Override
         public void mouseMoved(MouseEvent event) {
-            if (triangleCommand != null) {
-                triangleCommand.setTrianglePoint(event.getPoint(), false);
+            if (polylineCommand != null) {
+                polylineCommand.setPolylinePoint(event.getPoint(), false);
             }
         }
 

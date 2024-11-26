@@ -35,13 +35,14 @@ public class View extends JFrame implements ModelObserver {
         contentPane.add(buttonPanel, BorderLayout.NORTH);
         contentPane.add(drawingPanel, BorderLayout.CENTER);
 
-        this.setSize(800, 400);
+        this.setSize(1000, 500);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void initializeComponents() {
         JButton lineButton = new LineButton(model, undoManager, this, drawingPanel);
         JButton triangleButton = new TriangleButton(model, undoManager, this, drawingPanel);
+        JButton polygonButton = new PolygonButton(model, undoManager, this, drawingPanel);
         JButton labelButton = new LabelButton(model, undoManager, this, drawingPanel);
         JButton selectButton = new SelectButton(model, undoManager, this, drawingPanel);
         JButton saveButton = new SaveButton(model, undoManager, this);
@@ -52,6 +53,7 @@ public class View extends JFrame implements ModelObserver {
 
         buttonPanel.add(lineButton);
         buttonPanel.add(triangleButton);
+        buttonPanel.add(polygonButton);
         buttonPanel.add(labelButton);
         buttonPanel.add(selectButton);
         buttonPanel.add(deleteButton);
