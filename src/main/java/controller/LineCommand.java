@@ -1,29 +1,25 @@
 package controller;
 
+import model.Line;
 import model.Model;
-import model.Polyline;
 
 import java.awt.*;
 
-public class PolylineCommand extends Command {
-    private final Polyline polyline;
+public class LineCommand extends Command {
+    private final Line line;
     private int pointCount;
 
-    public PolylineCommand(Model model, UndoManager manager) {
+    public LineCommand(Model model, UndoManager manager) {
         super(model, manager);
-        this.polyline = new Polyline();
+        this.line = new Line();
         this.pointCount = 0;
     }
 
-    public void setPolylinePoint(Point point, boolean finalPosition) {
+    public void setLinePoint(Point point, boolean finalPosition) {
         if (pointCount == 0) {
-            polyline.addPoint(point);
-        } else if (pointCount > 0) {
-            if (polyline.getPointCount() > pointCount) {
-                polyline.getPoint(pointCount).setLocation(point);
-            } else {
-                polyline.addPoint(point);
-            }
+            line.setStart(point);
+        } else if (pointCount == 1) {
+            line.setEnd(point);
         }
 
         if (finalPosition) {
@@ -39,12 +35,12 @@ public class PolylineCommand extends Command {
 
     @Override
     public void execute() {
-        model.addItem(polyline);
+        model.addItem(line);
     }
 
     @Override
     public boolean undo() {
-        model.removeItem(polyline);
+        model.removeItem(line);
         return true;
     }
 
@@ -56,11 +52,10 @@ public class PolylineCommand extends Command {
 
     @Override
     public boolean end() {
-        if (pointCount != polyline.getPointCount()) {
+        if (pointCount != 2) {
             undo();
             return false;
         }
-
         return true;
     }
 }

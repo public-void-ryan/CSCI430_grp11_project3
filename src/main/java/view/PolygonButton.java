@@ -1,6 +1,6 @@
 package view;
 
-import controller.PolylineCommand;
+import controller.PolygonCommand;
 import controller.UndoManager;
 import model.Model;
 
@@ -14,7 +14,7 @@ public class PolygonButton extends JButton implements ActionListener {
     private final UndoManager undoManager;
     private final Model model;
     private final MouseHandler mouseHandler;
-    private PolylineCommand polylineCommand;
+    private PolygonCommand polygonCommand;
 
     public PolygonButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
         super("Polygon");
@@ -38,7 +38,7 @@ public class PolygonButton extends JButton implements ActionListener {
     }
 
     private void resetState() {
-        polylineCommand = null;
+        polygonCommand = null;
         undoManager.endCommand();
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         drawingPanel.removeMouseListener(mouseHandler);
@@ -50,24 +50,24 @@ public class PolygonButton extends JButton implements ActionListener {
         public void mouseClicked(MouseEvent event) {
             // Left click behavior
             if (SwingUtilities.isLeftMouseButton(event)) {
-                if (polylineCommand == null) {
-                    polylineCommand = new PolylineCommand(model, undoManager);
-                    polylineCommand.setPolylinePoint(event.getPoint(), true);
-                    undoManager.beginCommand(polylineCommand);
+                if (polygonCommand == null) {
+                    polygonCommand = new PolygonCommand(model, undoManager);
+                    polygonCommand.setPolygonPoint(event.getPoint(), true);
+                    undoManager.beginCommand(polygonCommand);
                 } else {
-                    polylineCommand.setPolylinePoint(event.getPoint(), true);
+                    polygonCommand.setPolygonPoint(event.getPoint(), true);
                 }
             }
             else if (SwingUtilities.isRightMouseButton(event)) {
-                polylineCommand.setPolylinePoint(event.getPoint(), true);
+                polygonCommand.closePolygon();
                 resetState();
             }
         }
 
         @Override
         public void mouseMoved(MouseEvent event) {
-            if (polylineCommand != null) {
-                polylineCommand.setPolylinePoint(event.getPoint(), false);
+            if (polygonCommand != null) {
+                polygonCommand.setPolygonPoint(event.getPoint(), false);
             }
         }
 

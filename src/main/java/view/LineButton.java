@@ -1,6 +1,6 @@
 package view;
 
-import controller.PolylineCommand;
+import controller.LineCommand;
 import controller.UndoManager;
 import model.Model;
 
@@ -14,7 +14,7 @@ public class LineButton extends JButton implements ActionListener {
     private final UndoManager undoManager;
     private final Model model;
     private final MouseHandler mouseHandler;
-    private PolylineCommand polylineCommand;
+    private LineCommand lineCommand;
 
     public LineButton(Model model, UndoManager undoManager, View view, JPanel drawingPanel) {
         super("Line");
@@ -38,7 +38,7 @@ public class LineButton extends JButton implements ActionListener {
     }
 
     private void resetState() {
-        polylineCommand = null;
+        lineCommand = null;
         undoManager.endCommand();
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         drawingPanel.removeMouseListener(mouseHandler);
@@ -48,20 +48,20 @@ public class LineButton extends JButton implements ActionListener {
     private class MouseHandler extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent event) {
-            if (polylineCommand == null || polylineCommand.getPointCount() == 0) {
-                polylineCommand = new PolylineCommand(model, undoManager);
-                polylineCommand.setPolylinePoint(event.getPoint(), true);
-                undoManager.beginCommand(polylineCommand);
-            } else if (polylineCommand.getPointCount() == 1) {
-                polylineCommand.setPolylinePoint(event.getPoint(), true);
+            if (lineCommand == null || lineCommand.getPointCount() == 0) {
+                lineCommand = new LineCommand(model, undoManager);
+                lineCommand.setLinePoint(event.getPoint(), true);
+                undoManager.beginCommand(lineCommand);
+            } else if (lineCommand.getPointCount() == 1) {
+                lineCommand.setLinePoint(event.getPoint(), true);
                 resetState();
             }
         }
 
         @Override
         public void mouseMoved(MouseEvent event) {
-            if (polylineCommand != null) {
-                polylineCommand.setPolylinePoint(event.getPoint(), false);
+            if (lineCommand != null) {
+                lineCommand.setLinePoint(event.getPoint(), false);
             }
         }
 
